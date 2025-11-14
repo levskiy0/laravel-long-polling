@@ -1,8 +1,11 @@
 {
     "name": "levskiy0/long-polling",
     "description": "Laravel Long-Polling system with Go service integration",
-    "type": "library",
     "license": "MIT",
+    "keywords": [
+        "long-polling",
+        "laravel"
+    ],
     "autoload": {
         "psr-4": {
             "Levskiy0\\LongPolling\\": "src/"
@@ -16,7 +19,9 @@
     "authors": [
         {
             "name": "Levskiy",
-            "email": "40x.pro@gmail.com"
+            "email": "40x.pro@gmail.com",
+            "homepage": "https://github.com/levskiy0",
+            "role": "Developer"
         }
     ],
     "require": {
