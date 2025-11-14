@@ -54,4 +54,52 @@ class LongPollingEvent extends Model
             'event' => $payload,
         ]);
     }
+
+    /**
+     * Get the last offset (event ID) for a specific channel
+     */
+    public static function getLastOffset(string $channelId): int
+    {
+        return static::query()
+            ->where('channel_id', $channelId)
+            ->max('id') ?? 0;
+    }
+
+    /**
+     * Get the last N events from the channel
+     */
+    public static function getLastEvents(string $channelId, int $count = 10): array
+    {
+        return static::query()
+            ->where('channel_id', $channelId)
+            ->orderBy('id', 'desc')
+            ->limit($count)
+            ->get()
+            ->reverse()
+            ->map(fn($event) => [
+                'id' => $event->id,
+                'event' => $event->event,
+                'created_at' => $event->created_at->timestamp,
+            ])
+            ->toArray();
+    }
+
+    /**
+     * Get updates (events) from offset
+     */
+    public static function getUpdates(string $channelId, int $fromOffset, int $limit = 100): array
+    {
+        return static::query()
+            ->where('channel_id', $channelId)
+            ->where('id', '>', $fromOffset)
+            ->orderBy('id')
+            ->limit($limit)
+            ->get()
+            ->map(fn($event) => [
+                'id' => $event->id,
+                'event' => $event->event,
+                'created_at' => $event->created_at->timestamp,
+            ])
+            ->toArray();
+    }
 }

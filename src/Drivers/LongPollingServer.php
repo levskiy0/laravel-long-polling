@@ -80,4 +80,19 @@ class LongPollingServer implements LongPollingContract
         Redis::connection($this->connection)
             ->publish($this->channel, $message);
     }
+
+    public function getLastOffset(string $channelId): int
+    {
+        return LongPollingEvent::getLastOffset($channelId);
+    }
+
+    public function getLastEvents(string $channelId, int $count = 10): array
+    {
+        return LongPollingEvent::getLastEvents($channelId, $count);
+    }
+
+    public function getUpdates(string $channelId, int $fromOffset, int $limit = 100): array
+    {
+        return LongPollingEvent::getUpdates($channelId, $fromOffset, $limit);
+    }
 }

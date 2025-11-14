@@ -33,11 +33,7 @@ class LongPollingServiceProvider extends ServiceProvider
             };
         });
 
-        $this->app->singleton('long-polling', function ($app) {
-            return new LongPollingManager(
-                broadcastQueue: config('long-polling.broadcast_queue'),
-            );
-        });
+        $this->app->alias(LongPollingContract::class, 'long-polling');
     }
 
     public function boot(): void
