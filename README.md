@@ -2,6 +2,10 @@
 
 Laravel package for long-polling functionality with Go service integration.
 
+👇👇👇
+
+[[Go Long-Polling Service]](https://github.com/levskiy0/go-laravel-long-polling)
+
 ## Features
 
 - **Queue-based Broadcasting**: Events are queued for reliable delivery
