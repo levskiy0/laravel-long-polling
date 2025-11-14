@@ -1,0 +1,43 @@
+{
+    "name": "levskiy0/long-polling",
+    "description": "Laravel Long-Polling system with Go service integration",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Levskiy0\\LongPolling\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Levskiy0\\LongPolling\\Tests\\": "tests/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Levskiy",
+            "email": "40x.pro@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=8.1",
+        "illuminate/support": "^10.2|^11.0|^12.0",
+        "illuminate/redis": "^10.2|^11.0|^12.0",
+        "illuminate/database": "^10.2|^11.0|^12.0",
+        "illuminate/queue": "^10.2|^11.0|^12.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^8.0|^9.0",
+        "phpunit/phpunit": "^10.0|^11.0"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Levskiy0\\LongPolling\\LongPollingServiceProvider"
+            ],
+            "aliases": {
+                "LongPolly": "LongPolling"
+            }
+        }
+    }
+}
