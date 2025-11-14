@@ -36,7 +36,7 @@
                 "Levskiy0\\LongPolling\\LongPollingServiceProvider"
             ],
             "aliases": {
-                "LongPolly": "LongPolling"
+                "LongPolling": "LongPolling"
             }
         }
     }

@@ -24,7 +24,7 @@ composer require levskiy0/long-polling
 ### 2. Publish Configuration
 
 ```bash
-php artisan vendor:publish --tag=longpolly-config
+php artisan vendor:publish --tag=long-polling-config
 ```
 
 ### 3. Configure Environment
@@ -56,7 +56,7 @@ php artisan queue:work --queue=broadcast
 
 ## Configuration
 
-The configuration file is located at `config/longpolly.php`:
+The configuration file is located at `config/long-polling.php`:
 
 ```php
 return [
@@ -140,7 +140,7 @@ poll();
 
 ## API Reference
 
-### LongPolly Facade
+### LongPolling Facade
 
 #### `broadcast(int|string $channelId, array $payload): void`
 
@@ -152,7 +152,7 @@ Broadcasts an event to a specific channel. The event will be queued and processe
 
 ### Internal Endpoint
 
-#### `GET /api/longpolly/getEvents`
+#### `GET /api/long-polling/getEvents`
 
 Internal endpoint used by the Go service to fetch events.
 
@@ -209,7 +209,7 @@ php artisan test --filter=LongPolling
 
 ## Architecture
 
-1. **Application calls `LongPolly::broadcast()`**
+1. **Application calls `LongPolling::broadcast()`**
    - Event is dispatched to the broadcast queue
 
 2. **Queue worker processes the job**

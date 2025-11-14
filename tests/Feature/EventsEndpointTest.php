@@ -16,7 +16,7 @@ class EventsEndpointTest extends TestCase
 {
     public function test_get_events_requires_authentication(): void
     {
-        $response = $this->getJson('/api/longpolly/getEvents?channel_id=test');
+        $response = $this->getJson('/api/long-polling/getEvents?channel_id=test');
 
         $response->assertStatus(401)
             ->assertJson(['error' => 'Unauthorized']);
@@ -24,7 +24,7 @@ class EventsEndpointTest extends TestCase
 
     public function test_get_events_requires_channel_id(): void
     {
-        $response = $this->getJson('/api/longpolly/getEvents?secret=test_secret');
+        $response = $this->getJson('/api/long-polling/getEvents?secret=test_secret');
 
         $response->assertStatus(400)
             ->assertJson(['error' => 'channel_id is required']);
@@ -36,7 +36,7 @@ class EventsEndpointTest extends TestCase
         LongPollingEvent::storeEvent('test-channel', ['type' => 'test', 'data' => 'event2']);
         LongPollingEvent::storeEvent('other-channel', ['type' => 'test', 'data' => 'event3']);
 
-        $response = $this->getJson('/api/longpolly/getEvents?secret=test_secret&channel_id=test-channel');
+        $response = $this->getJson('/api/long-polling/getEvents?secret=test_secret&channel_id=test-channel');
 
         $response->assertStatus(200)
             ->assertJsonStructure([
@@ -53,7 +53,7 @@ class EventsEndpointTest extends TestCase
         $event1 = LongPollingEvent::storeEvent('test-channel', ['type' => 'test', 'data' => 'event1']);
         $event2 = LongPollingEvent::storeEvent('test-channel', ['type' => 'test', 'data' => 'event2']);
 
-        $response = $this->getJson('/api/longpolly/getEvents?secret=test_secret&channel_id=test-channel&offset='.$event1->id);
+        $response = $this->getJson('/api/long-polling/getEvents?secret=test_secret&channel_id=test-channel&offset='.$event1->id);
 
         $response->assertStatus(200)
             ->assertJsonCount(1, 'events');
@@ -65,7 +65,7 @@ class EventsEndpointTest extends TestCase
             LongPollingEvent::storeEvent('test-channel', ['type' => 'test', 'data' => "event{$i}"]);
         }
 
-        $response = $this->getJson('/api/longpolly/getEvents?secret=test_secret&channel_id=test-channel&limit=5');
+        $response = $this->getJson('/api/long-polling/getEvents?secret=test_secret&channel_id=test-channel&limit=5');
 
         $response->assertStatus(200)
             ->assertJsonCount(5, 'events');

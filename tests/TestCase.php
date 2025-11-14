@@ -27,7 +27,7 @@ abstract class TestCase extends BaseTestCase
     protected function getPackageAliases($app): array
     {
         return [
-            'LongPolly' => \Levskiy0\LongPolling\Facades\LongPolling::class,
+            'LongPolling' => \Levskiy0\LongPolling\Facades\LongPolling::class,
         ];
     }
 

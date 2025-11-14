@@ -1,6 +1,6 @@
 <?php
 /**
- * LongPolly.php
+ * LongPolling.php
  * Author: 40x.Pro@gmail.com | github.com/levskiy0
  * Date: 14.11.2025
  */
