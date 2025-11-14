@@ -97,9 +97,9 @@ LongPolling::broadcast(
 If you need to broadcast synchronously:
 
 ```php
-use Levskiy0\LongPolling\Contracts\LongPollingDriver;
+use Levskiy0\LongPolling\Contracts\LongPollingContract;
 
-$driver = app(LongPollingDriver::class);
+$driver = app(LongPollingContract::class);
 $driver->broadcast('channel-id', ['type' => 'event', 'data' => '...']);
 ```
 

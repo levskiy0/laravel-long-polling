@@ -14,7 +14,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Levskiy0\LongPolling\Contracts\LongPollingDriver;
+use Levskiy0\LongPolling\Contracts\LongPollingContract;
 
 class BroadcastEventJob implements ShouldQueue
 {
@@ -26,7 +26,7 @@ class BroadcastEventJob implements ShouldQueue
     ) {
     }
 
-    public function handle(LongPollingDriver $driver): void
+    public function handle(LongPollingContract $driver): void
     {
         $driver->broadcast($this->channelId, $this->payload);
     }

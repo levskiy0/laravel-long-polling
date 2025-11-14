@@ -11,8 +11,8 @@ namespace Levskiy0\LongPolling;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
-use Levskiy0\LongPolling\Contracts\LongPollingDriver;
-use Levskiy0\LongPolling\Drivers\RedisDriver;
+use Levskiy0\LongPolling\Contracts\LongPollingContract;
+use Levskiy0\LongPolling\Drivers\LongPollingServer;
 use Levskiy0\LongPolling\Http\Controllers\EventsController;
 
 class LongPollingServiceProvider extends ServiceProvider
@@ -21,11 +21,11 @@ class LongPollingServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__.'/../config/long-polling.php', 'long-polling');
 
-        $this->app->singleton(LongPollingDriver::class, function ($app) {
+        $this->app->singleton(LongPollingContract::class, function ($app) {
             $driver = config('long-polling.driver');
 
             return match ($driver) {
-                'redis' => new RedisDriver(
+                'redis' => new LongPollingServer(
                     connection: config('long-polling.redis.connection'),
                     channel: config('long-polling.redis.channel'),
                 ),

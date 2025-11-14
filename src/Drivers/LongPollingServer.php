@@ -1,7 +1,7 @@
 <?php
 /**
- * RedisDriver.php
- * Redis driver for broadcasting long-polling events
+ * LongPollingServer.php
+ * Long-polling server driver for broadcasting events
  *
  * Author: 40x.Pro@gmail.com | github.com/levskiy0
  * Date: 14.11.2025
@@ -9,16 +9,24 @@
 
 namespace Levskiy0\LongPolling\Drivers;
 
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Facades\Redis;
-use Levskiy0\LongPolling\Contracts\LongPollingDriver;
+use Levskiy0\LongPolling\Contracts\LongPollingContract;
 use Levskiy0\LongPolling\Models\LongPollingEvent;
 
-class RedisDriver implements LongPollingDriver
+class LongPollingServer implements LongPollingContract
 {
+    private Client $httpClient;
+
     public function __construct(
         private readonly string $connection,
         private readonly string $channel,
     ) {
+        $this->httpClient = new Client([
+            'timeout' => 5,
+            'verify' => false,
+        ]);
     }
 
     /**
@@ -32,6 +40,28 @@ class RedisDriver implements LongPollingDriver
     {
         $event = LongPollingEvent::storeEvent($channelId, $payload);
         $this->publishToRedis($channelId, $event->id);
+    }
+
+    /**
+     * Get JWT access token from Go service
+     */
+    public function getToken(string $channelId): string
+    {
+        $goServiceUrl = config('long-polling.go_service_url');
+
+        try {
+            $response = $this->httpClient->post("{$goServiceUrl}/getAccessToken", [
+                'json' => [
+                    'channel_id' => $channelId,
+                ],
+            ]);
+
+            $data = json_decode($response->getBody()->getContents(), true);
+
+            return $data['token'] ?? throw new \RuntimeException('Token not found in response');
+        } catch (GuzzleException $e) {
+            throw new \RuntimeException("Failed to obtain token from Go service: {$e->getMessage()}", 0, $e);
+        }
     }
 
     /**
