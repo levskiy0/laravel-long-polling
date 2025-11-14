@@ -22,7 +22,7 @@ return [
 
     // Redis configuration
     'redis' => [
-        'connection' => env('LONGPOLLING_REDIS_CONNECTION', 'longpolling'),
+        'connection' => env('LONGPOLLING_REDIS_CONNECTION', 'default'),
         'channel'    => env('LONGPOLLING_REDIS_CHANNEL', 'longpoll:events'),
     ],
 ];
