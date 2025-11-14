@@ -24,7 +24,7 @@ Laravel package for long-polling functionality with Go service integration.
 If using as a local package (monorepo):
 
 ```bash
-composer require levskiy0/long-polling
+composer require levskiy0/long-polling:"v0.1.0"
 ```
 
 ### 2. Publish Configuration
