@@ -138,6 +138,218 @@ async function poll(offset = 0) {
 poll();
 ```
 
+## Example: Building a Real-Time Chat
+
+This example demonstrates how to build a complete real-time chat application using the Long-Polling package.
+
+### Step 1: Create Chat Controller
+
+```php
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
+use Levskiy0\LongPolling\Facades\LongPolling;
+
+class ChatController extends Controller
+{
+    private const CHANNEL_ID = 'chat';
+
+    public function index(): View
+    {
+        return view('chat.index');
+    }
+
+    public function sendMessage(Request $request): JsonResponse
+    {
+        $request->validate([
+            'message' => 'required|string|max:1000',
+        ]);
+
+        // Broadcast message through long polling
+        LongPolling::broadcast(self::CHANNEL_ID, [
+            'type' => 'message',
+            'user_id' => auth()->id(),
+            'user_name' => auth()->user()->name,
+            'message' => $request->message,
+            'timestamp' => now()->toISOString(),
+        ]);
+
+        return response()->json(['success' => true]);
+    }
+
+    public function getState(): JsonResponse
+    {
+        $driver = app(\Levskiy0\LongPolling\Contracts\LongPollingContract::class);
+        $lastOffset = LongPolling::getLastOffset(self::CHANNEL_ID);
+        $offsetWithMargin = max(0, $lastOffset - 10);
+
+        $goServiceUrl = config('long-polling.go_service_url');
+        $getUpdatesUrl = "{$goServiceUrl}/getUpdates?channel_id=".self::CHANNEL_ID;
+
+        return response()->json([
+            'offset' => $offsetWithMargin,
+            'token' => $driver->getToken(self::CHANNEL_ID),
+            'get_updates_url' => $getUpdatesUrl,
+        ]);
+    }
+}
+```
+
+### Step 2: Register Routes
+
+```php
+// routes/web.php
+
+Route::middleware('auth')->group(function () {
+    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
+    Route::get('/chat/state', [ChatController::class, 'getState'])->name('chat.state');
+    Route::post('/chat/send', [ChatController::class, 'sendMessage'])->name('chat.send');
+});
+```
+
+### Step 3: Create Frontend
+
+```html
+<script>
+    let currentOffset = 0;
+    let pollingActive = false;
+    let getUpdatesUrl = '';
+    let token = '';
+
+    // Initialize chat
+    async function initialize() {
+        // Get initial state (offset with -10 margin, token, updates URL)
+        const response = await fetch('/chat/state');
+        const data = await response.json();
+
+        currentOffset = data.offset;
+        getUpdatesUrl = data.get_updates_url;
+        token = data.token;
+
+        // Start long polling from offset with -10 margin
+        // This will load the last ~10 messages on first poll
+        startLongPolling();
+    }
+
+    // Start long polling from GO service
+    function startLongPolling() {
+        if (pollingActive) return;
+        pollingActive = true;
+        pollForMessages();
+    }
+
+    async function pollForMessages() {
+        while (pollingActive) {
+            try {
+                // Call GO service directly
+                const url = `${getUpdatesUrl}&offset=${currentOffset}&token=${encodeURIComponent(token)}`;
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.events && data.events.length > 0) {
+                    data.events.forEach(event => displayMessage(event));
+                    currentOffset = data.events[data.events.length - 1].id;
+                }
+            } catch (error) {
+                console.error('Polling error:', error);
+                await new Promise(resolve => setTimeout(resolve, 3000));
+            }
+        }
+    }
+
+    // Send message
+    async function sendMessage(message) {
+        await fetch('/chat/send', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({ message })
+        });
+    }
+
+    function displayMessage(event) {
+        const msg = event.event;
+        console.log(`${msg.user_name}: ${msg.message}`);
+    }
+
+    // Initialize on page load
+    initialize();
+</script>
+```
+
+### Step 4: Start Required Services
+
+```bash
+# Terminal 1: Start Laravel development server
+cd laravel && php artisan serve
+
+# Terminal 2: Start queue worker (processes broadcast events)
+cd laravel && php artisan queue:work --queue=broadcast
+
+# Terminal 3: Start Redis (if not running as service)
+redis-server
+
+# Terminal 4: Start GO long-polling service
+cd go-service && go run main.go
+```
+
+### Step 5: How It Works
+
+1. **User opens chat** (`/chat`)
+   - Frontend calls `/chat/state`
+   - Receives: offset with -10 margin, JWT token, and pre-built updates URL
+   - Immediately starts long polling from this offset
+   - First poll returns the last ~10 messages (messages between offset-10 and current)
+
+2. **User sends message** (`/chat/send`)
+   - Laravel stores event in `long_polling_events` table
+   - Publishes notification to Redis channel
+   - GO service receives Redis notification
+   - GO service fetches event from Laravel
+   - GO service delivers event to waiting clients
+
+3. **Frontend polls for updates**
+   - Calls GO service: `${get_updates_url}&offset=${currentOffset}&token=${token}`
+   - GO service holds connection until new events or timeout
+   - Returns new events when available
+   - Frontend updates offset and continues polling
+
+### Available Methods
+
+The package provides additional methods for advanced use cases:
+
+```php
+use Levskiy0\LongPolling\Facades\LongPolling;
+
+// Get last offset for a channel
+$offset = LongPolling::getLastOffset('chat');
+
+// Get last N events (for initial load)
+$events = LongPolling::getLastEvents('chat', 10);
+
+// Get events from specific offset (for manual polling)
+$updates = LongPolling::getUpdates('chat', fromOffset: 100, limit: 50);
+
+// Get JWT token for GO service authentication
+$driver = app(\Levskiy0\LongPolling\Contracts\LongPollingContract::class);
+$token = $driver->getToken('chat');
+```
+
+### Production Considerations
+
+- **Queue Workers**: Use Supervisor to keep queue workers running
+- **Redis**: Ensure Redis is persistent and monitored
+- **GO Service**: Run behind reverse proxy (Nginx) with SSL
+- **Rate Limiting**: Add rate limiting to `/chat/send` endpoint
+- **Authentication**: Ensure all routes are properly authenticated
+- **Scaling**: GO service can be scaled horizontally, Redis pub/sub will distribute to all instances
+
 ## API Reference
 
 ### LongPolling Facade
@@ -193,36 +405,8 @@ Indexes:
 
 ## Testing
 
-Run the package tests:
+...
 
-```bash
-cd packages/levskiy0/laravel-long-polling
-composer install
-vendor/bin/phpunit
-```
-
-Or from your Laravel application:
-
-```bash
-php artisan test --filter=LongPolling
-```
-
-## Architecture
-
-1. **Application calls `LongPolling::broadcast()`**
-   - Event is dispatched to the broadcast queue
-
-2. **Queue worker processes the job**
-   - Event is stored in database
-   - Notification is published to Redis
-
-3. **Go service receives Redis notification**
-   - Wakes up waiting long-poll connections
-   - Fetches new events from Laravel via `/getEvents`
-
-4. **Client receives events**
-   - Processes events and updates offset
-   - Continues polling
 
 ## License
 

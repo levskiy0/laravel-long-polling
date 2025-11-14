@@ -9,6 +9,15 @@ namespace Levskiy0\LongPolling\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
+/**
+ * @method static void broadcast(string $channelId, array $payload)
+ * @method static string getToken(string $channelId)
+ * @method static int getLastOffset(string $channelId)
+ * @method static array getLastEvents(string $channelId, int $count = 10)
+ * @method static array getUpdates(string $channelId, int $fromOffset, int $limit = 100)
+ *
+ * @see \Levskiy0\LongPolling\Contracts\LongPollingContract
+ */
 class LongPolling extends Facade
 {
     protected static function getFacadeAccessor(): string
