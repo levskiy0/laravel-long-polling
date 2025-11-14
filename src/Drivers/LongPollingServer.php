@@ -48,11 +48,13 @@ class LongPollingServer implements LongPollingContract
     public function getToken(string $channelId): string
     {
         $goServiceUrl = config('long-polling.go_service_url');
+        $accessSecret = config('long-polling.access_secret');
 
         try {
             $response = $this->httpClient->post("{$goServiceUrl}/getAccessToken", [
-                'json' => [
+                'query' => [
                     'channel_id' => $channelId,
+                    'secret' => $accessSecret,
                 ],
             ]);
 
