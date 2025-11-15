@@ -23,7 +23,7 @@ Laravel package that provides queue-backed long-polling primitives for Laravel a
 
 1. **Install the package**
    ```bash
-   composer require levskiy0/long-polling:^1.0
+   composer require levskiy0/long-polling:^1.1.3
    ```
 2. **Publish configuration**
    ```bash
