@@ -42,7 +42,7 @@
                 "Levskiy0\\LongPolling\\LongPollingServiceProvider"
             ],
             "aliases": {
-                "LongPolling": "LongPolling"
+                "LongPolling": "Levskiy0\\LongPolling\\Facades\\LongPolling"
             }
         }
     }

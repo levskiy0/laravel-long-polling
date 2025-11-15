@@ -33,7 +33,7 @@ class BroadcastTest extends TestCase
         $payload = ['type' => 'test', 'message' => 'Hello World'];
 
         $job = new BroadcastEventJob($channelId, $payload);
-        $job->handle(app(\Levskiy0\LongPolling\Contracts\LongPollingContract::class));
+        $job->handle();
 
         $this->assertDatabaseHas('long_polling_events', [
             'channel_id' => $channelId,

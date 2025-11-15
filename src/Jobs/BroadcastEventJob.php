@@ -26,8 +26,10 @@ class BroadcastEventJob implements ShouldQueue
     ) {
     }
 
-    public function handle(LongPollingContract $driver): void
+    public function handle(): void
     {
+        // Get the underlying driver directly, not the dispatcher
+        $driver = app('long-polling.driver');
         $driver->broadcast($this->channelId, $this->payload);
     }
 }

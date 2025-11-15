@@ -14,6 +14,7 @@ use Illuminate\Support\ServiceProvider;
 use Levskiy0\LongPolling\Contracts\LongPollingContract;
 use Levskiy0\LongPolling\Drivers\LongPollingServer;
 use Levskiy0\LongPolling\Http\Controllers\EventsController;
+use Levskiy0\LongPolling\LongPollingDispatcher;
 
 class LongPollingServiceProvider extends ServiceProvider
 {
@@ -21,7 +22,8 @@ class LongPollingServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__.'/../config/long-polling.php', 'long-polling');
 
-        $this->app->singleton(LongPollingContract::class, function ($app) {
+        // Register the underlying driver
+        $this->app->singleton('long-polling.driver', function ($app) {
             $driver = config('long-polling.driver');
 
             return match ($driver) {
@@ -31,6 +33,14 @@ class LongPollingServiceProvider extends ServiceProvider
                 ),
                 default => throw new \InvalidArgumentException("Unsupported driver: {$driver}"),
             };
+        });
+
+        // Register the dispatcher that wraps the driver and queues broadcasts
+        $this->app->singleton(LongPollingContract::class, function ($app) {
+            return new LongPollingDispatcher(
+                driver: $app->make('long-polling.driver'),
+                queue: config('long-polling.broadcast_queue', 'broadcast'),
+            );
         });
 
         $this->app->alias(LongPollingContract::class, 'long-polling');
