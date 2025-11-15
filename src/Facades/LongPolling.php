@@ -1,4 +1,5 @@
 <?php
+
 /**
  * LongPolling.php
  * Author: 40x.Pro@gmail.com | github.com/levskiy0

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * LongPollingServer.php
  * Long-polling server driver for broadcasting events

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * LongPollingDispatcher.php
  * Dispatcher that queues broadcast events instead of executing them synchronously
@@ -17,8 +18,7 @@ class LongPollingDispatcher implements LongPollingContract
     public function __construct(
         private readonly LongPollingContract $driver,
         private readonly string $queue,
-    ) {
-    }
+    ) {}
 
     public function broadcast(string $channelId, array $payload): void
     {

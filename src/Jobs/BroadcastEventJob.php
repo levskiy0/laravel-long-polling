@@ -1,4 +1,5 @@
 <?php
+
 /**
  * BroadcastEventJob.php
  * Job for broadcasting long-polling events through queue
@@ -14,7 +15,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Levskiy0\LongPolling\Contracts\LongPollingContract;
 
 class BroadcastEventJob implements ShouldQueue
 {
@@ -23,8 +23,7 @@ class BroadcastEventJob implements ShouldQueue
     public function __construct(
         private readonly string $channelId,
         private readonly array $payload,
-    ) {
-    }
+    ) {}
 
     public function handle(): void
     {

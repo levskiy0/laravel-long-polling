@@ -1,4 +1,5 @@
 <?php
+
 /**
  * EventsController.php
  * Controller for handling event retrieval from Go service
@@ -40,7 +41,7 @@ class EventsController extends Controller
         }
 
         $channelId = $request->query('channel_id');
-        if (!$channelId) {
+        if (! $channelId) {
             return response()->json([
                 'error' => 'channel_id is required',
             ], 400);

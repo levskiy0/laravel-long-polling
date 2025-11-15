@@ -1,4 +1,5 @@
 <?php
+
 /**
  * LongPollEvent.php
  * Model for long polling events
@@ -36,7 +37,7 @@ class LongPollingEvent extends Model
             ->orderBy('id')
             ->limit($limit)
             ->get()
-            ->map(fn($event) => [
+            ->map(fn ($event) => [
                 'id' => $event->id,
                 'event' => $event->event,
                 'created_at' => $event->created_at->timestamp,
@@ -76,7 +77,7 @@ class LongPollingEvent extends Model
             ->limit($count)
             ->get()
             ->reverse()
-            ->map(fn($event) => [
+            ->map(fn ($event) => [
                 'id' => $event->id,
                 'event' => $event->event,
                 'created_at' => $event->created_at->timestamp,
@@ -95,7 +96,7 @@ class LongPollingEvent extends Model
             ->orderBy('id')
             ->limit($limit)
             ->get()
-            ->map(fn($event) => [
+            ->map(fn ($event) => [
                 'id' => $event->id,
                 'event' => $event->event,
                 'created_at' => $event->created_at->timestamp,

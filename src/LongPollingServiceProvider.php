@@ -1,4 +1,5 @@
 <?php
+
 /**
  * LongPollingServiceProvider.php
  * Service provider for Laravel Long-Polling system
@@ -14,7 +15,6 @@ use Illuminate\Support\ServiceProvider;
 use Levskiy0\LongPolling\Contracts\LongPollingContract;
 use Levskiy0\LongPolling\Drivers\LongPollingServer;
 use Levskiy0\LongPolling\Http\Controllers\EventsController;
-use Levskiy0\LongPolling\LongPollingDispatcher;
 
 class LongPollingServiceProvider extends ServiceProvider
 {
