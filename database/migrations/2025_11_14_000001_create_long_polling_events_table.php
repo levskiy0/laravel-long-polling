@@ -1,4 +1,5 @@
 <?php
+
 /**
  * create_long_polling_events_table.php
  * Migration for long polling events table

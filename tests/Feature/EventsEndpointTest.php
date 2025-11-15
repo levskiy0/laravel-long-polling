@@ -1,4 +1,5 @@
 <?php
+
 /**
  * EventsEndpointTest.php
  * Tests for /getEvents endpoint
@@ -26,8 +27,8 @@ class EventsEndpointTest extends TestCase
     {
         $response = $this->getJson('/api/long-polling/getEvents?secret=test_secret');
 
-        $response->assertStatus(400)
-            ->assertJson(['error' => 'channel_id is required']);
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['channel_id']);
     }
 
     public function test_get_events_returns_events(): void

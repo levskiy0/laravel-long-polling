@@ -26,8 +26,8 @@ class EventsController extends Controller
      * Query parameters:
      * - channel_id: The channel to fetch events for
      * - secret: Shared secret for authentication
-     * - offset: Last event ID received (default: 0)
-     * - limit: Maximum number of events to return (default: 100, max: 100)
+     * - offset: Last event ID received (default: 0, min: 0)
+     * - limit: Maximum number of events to return (default: 100, min: 1, max: 100)
      */
     public function getEvents(Request $request): JsonResponse
     {
@@ -40,15 +40,17 @@ class EventsController extends Controller
             ], 401);
         }
 
-        $channelId = $request->query('channel_id');
-        if (! $channelId) {
-            return response()->json([
-                'error' => 'channel_id is required',
-            ], 400);
-        }
+        // Validate input parameters
+        $validated = $request->validate([
+            'channel_id' => 'required|string|max:255',
+            'offset' => 'nullable|integer|min:0',
+            'limit' => 'nullable|integer|min:1|max:100',
+        ]);
 
-        $offset = (int) $request->query('offset', 0);
-        $limit = min((int) $request->query('limit', 100), 100);
+        $channelId = $validated['channel_id'];
+        $offset = $validated['offset'] ?? 0;
+        $limit = $validated['limit'] ?? 100;
+
         $events = LongPollingEvent::getEvents($channelId, $offset, $limit);
 
         return response()->json([

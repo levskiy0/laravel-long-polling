@@ -1,4 +1,5 @@
 <?php
+
 /**
  * TestCase.php
  * Base test case for long-polling package tests

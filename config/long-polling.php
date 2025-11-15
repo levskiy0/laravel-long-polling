@@ -1,4 +1,5 @@
 <?php
+
 /**
  * long-polling.php
  * Configuration for Laravel Long-Polling system
@@ -23,6 +24,6 @@ return [
     // Redis configuration
     'redis' => [
         'connection' => env('LONGPOLLING_REDIS_CONNECTION', 'default'),
-        'channel'    => env('LONGPOLLING_REDIS_CHANNEL', 'longpoll:events'),
+        'channel' => env('LONGPOLLING_REDIS_CHANNEL', 'longpoll:events'),
     ],
 ];
