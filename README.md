@@ -8,9 +8,6 @@ Laravel package that provides queue-backed long-polling primitives for Laravel a
 
 - **Queue-Based Broadcasting** - events are persisted and dispatched through Laravel queues for reliable delivery.
 - **Redis Fan-Out** - each broadcast notifies the Go service via Redis Pub/Sub so connected clients update instantly.
-- **Typed PHP API** - a facade plus contract keep method names consistent across service providers and tests.
-- **Secure REST Endpoint** - Go service fetches updates over a protected HTTP endpoint that validates secrets.
-- **Testbench Coverage** - PHPUnit + Orchestra Testbench cover the package without needing a full Laravel install.
 
 ## Requirements
 
