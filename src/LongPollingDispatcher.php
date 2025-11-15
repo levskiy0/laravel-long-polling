@@ -26,6 +26,12 @@ class LongPollingDispatcher implements LongPollingContract
             ->onQueue($this->queue);
     }
 
+    public function broadcastNow(string $channelId, array $payload): void
+    {
+        // Bypass queue and call driver directly
+        $this->driver->broadcastNow($channelId, $payload);
+    }
+
     public function getToken(string $channelId): string
     {
         return $this->driver->getToken($channelId);

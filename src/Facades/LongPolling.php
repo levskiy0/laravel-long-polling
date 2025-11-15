@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Facade;
 
 /**
  * @method static void broadcast(string $channelId, array $payload)
+ * @method static void broadcastNow(string $channelId, array $payload)
  * @method static string getToken(string $channelId)
  * @method static int getLastOffset(string $channelId)
  * @method static array getLastEvents(string $channelId, int $count = 10)

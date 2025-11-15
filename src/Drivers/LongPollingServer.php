@@ -44,6 +44,18 @@ class LongPollingServer implements LongPollingContract
     }
 
     /**
+     * Broadcast an event immediately (synchronous)
+     *
+     * This method does the same as broadcast() but is called directly,
+     * bypassing the queue system for immediate delivery.
+     */
+    public function broadcastNow(string $channelId, array $payload): void
+    {
+        $event = LongPollingEvent::storeEvent($channelId, $payload);
+        $this->publishToRedis($channelId, $event->id);
+    }
+
+    /**
      * Get JWT access token from Go service
      */
     public function getToken(string $channelId): string

@@ -10,7 +10,15 @@ namespace Levskiy0\LongPolling\Contracts;
 
 interface LongPollingContract
 {
+    /**
+     * Broadcast an event to a channel (queued)
+     */
     public function broadcast(string $channelId, array $payload): void;
+
+    /**
+     * Broadcast an event to a channel immediately (synchronous, bypassing queue)
+     */
+    public function broadcastNow(string $channelId, array $payload): void;
 
     public function getToken(string $channelId): string;
 
