@@ -18,6 +18,7 @@ class LongPollingEvent extends Model
 
     protected $fillable = [
         'channel_id',
+        'type',
         'event',
     ];
 
@@ -48,10 +49,11 @@ class LongPollingEvent extends Model
     /**
      * Store a new event
      */
-    public static function storeEvent(string $channelId, array $payload): self
+    public static function storeEvent(string $channelId, array $payload, string $type = 'event'): self
     {
         return static::create([
             'channel_id' => $channelId,
+            'type' => $type,
             'event' => $payload,
         ]);
     }
@@ -102,5 +104,50 @@ class LongPollingEvent extends Model
                 'created_at' => $event->created_at->timestamp,
             ])
             ->toArray();
+    }
+
+    /**
+     * Get the last offset (event ID) for a specific channel and type
+     */
+    public static function getLastOffsetByType(string $channelId, string $type): int
+    {
+        return static::query()
+            ->where('channel_id', $channelId)
+            ->where('type', $type)
+            ->max('id') ?? 0;
+    }
+
+    /**
+     * Clear events by type with optional TTL filter
+     */
+    public static function clearByType(string $channelId, string $type, ?int $ttl = null): int
+    {
+        $query = static::query()
+            ->where('channel_id', $channelId)
+            ->where('type', $type);
+
+        if ($ttl !== null) {
+            $query->where('created_at', '<', now()->subSeconds($ttl));
+        }
+
+        return $query->delete();
+    }
+
+    /**
+     * Clear events with optional channel and TTL filters
+     */
+    public static function clear(?string $channelId = null, ?int $ttl = null): int
+    {
+        $query = static::query();
+
+        if ($channelId !== null) {
+            $query->where('channel_id', $channelId);
+        }
+
+        if ($ttl !== null) {
+            $query->where('created_at', '<', now()->subSeconds($ttl));
+        }
+
+        return $query->delete();
     }
 }

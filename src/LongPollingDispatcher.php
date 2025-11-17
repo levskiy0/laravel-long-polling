@@ -20,16 +20,16 @@ class LongPollingDispatcher implements LongPollingContract
         private readonly string $queue,
     ) {}
 
-    public function broadcast(string $channelId, array $payload): void
+    public function broadcast(string $channelId, array $payload, string $type = 'event'): void
     {
-        BroadcastEventJob::dispatch($channelId, $payload)
+        BroadcastEventJob::dispatch($channelId, $payload, $type)
             ->onQueue($this->queue);
     }
 
-    public function broadcastNow(string $channelId, array $payload): void
+    public function broadcastNow(string $channelId, array $payload, string $type = 'event'): void
     {
         // Bypass queue and call driver directly
-        $this->driver->broadcastNow($channelId, $payload);
+        $this->driver->broadcastNow($channelId, $payload, $type);
     }
 
     public function getToken(string $channelId): string
@@ -42,6 +42,11 @@ class LongPollingDispatcher implements LongPollingContract
         return $this->driver->getLastOffset($channelId);
     }
 
+    public function getLastOffsetByType(string $channelId, string $type): int
+    {
+        return $this->driver->getLastOffsetByType($channelId, $type);
+    }
+
     public function getLastEvents(string $channelId, int $count = 10): array
     {
         return $this->driver->getLastEvents($channelId, $count);
@@ -50,5 +55,15 @@ class LongPollingDispatcher implements LongPollingContract
     public function getUpdates(string $channelId, int $fromOffset, int $limit = 100): array
     {
         return $this->driver->getUpdates($channelId, $fromOffset, $limit);
+    }
+
+    public function clearByType(string $channelId, string $type, ?int $ttl = null): int
+    {
+        return $this->driver->clearByType($channelId, $type, $ttl);
+    }
+
+    public function clear(?string $channelId = null, ?int $ttl = null): int
+    {
+        return $this->driver->clear($channelId, $ttl);
     }
 }

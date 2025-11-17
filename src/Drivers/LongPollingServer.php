@@ -37,9 +37,9 @@ class LongPollingServer implements LongPollingContract
      * 1. Stores the event in the database
      * 2. Publishes a notification to Redis for real-time delivery
      */
-    public function broadcast(string $channelId, array $payload): void
+    public function broadcast(string $channelId, array $payload, string $type = 'event'): void
     {
-        $event = LongPollingEvent::storeEvent($channelId, $payload);
+        $event = LongPollingEvent::storeEvent($channelId, $payload, $type);
         $this->publishToRedis($channelId, $event->id);
     }
 
@@ -49,9 +49,9 @@ class LongPollingServer implements LongPollingContract
      * This method does the same as broadcast() but is called directly,
      * bypassing the queue system for immediate delivery.
      */
-    public function broadcastNow(string $channelId, array $payload): void
+    public function broadcastNow(string $channelId, array $payload, string $type = 'event'): void
     {
-        $event = LongPollingEvent::storeEvent($channelId, $payload);
+        $event = LongPollingEvent::storeEvent($channelId, $payload, $type);
         $this->publishToRedis($channelId, $event->id);
     }
 
@@ -99,6 +99,11 @@ class LongPollingServer implements LongPollingContract
         return LongPollingEvent::getLastOffset($channelId);
     }
 
+    public function getLastOffsetByType(string $channelId, string $type): int
+    {
+        return LongPollingEvent::getLastOffsetByType($channelId, $type);
+    }
+
     public function getLastEvents(string $channelId, int $count = 10): array
     {
         return LongPollingEvent::getLastEvents($channelId, $count);
@@ -107,5 +112,15 @@ class LongPollingServer implements LongPollingContract
     public function getUpdates(string $channelId, int $fromOffset, int $limit = 100): array
     {
         return LongPollingEvent::getUpdates($channelId, $fromOffset, $limit);
+    }
+
+    public function clearByType(string $channelId, string $type, ?int $ttl = null): int
+    {
+        return LongPollingEvent::clearByType($channelId, $type, $ttl);
+    }
+
+    public function clear(?string $channelId = null, ?int $ttl = null): int
+    {
+        return LongPollingEvent::clear($channelId, $ttl);
     }
 }
