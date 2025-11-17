@@ -153,9 +153,8 @@ class ChatController extends Controller
         $offsetWithMargin = max(0, $lastOffset - 10);
 
         $getUpdatesUrl = sprintf(
-            '%s/getUpdates?channel_id=%s',
-            config('long-polling.go_service_url'),
-            self::CHANNEL_ID
+            '%s/getUpdates?',
+            config('long-polling.go_service_url')
         );
 
         return response()->json([
