@@ -14,12 +14,10 @@ use Illuminate\Support\Facades\Facade;
  * @method static void broadcast(string $channelId, array $payload, string $type = 'event')
  * @method static void broadcastNow(string $channelId, array $payload, string $type = 'event')
  * @method static string getToken(string $channelId)
- * @method static int getLastOffset(string $channelId)
- * @method static int getLastOffsetByType(string $channelId, string $type)
- * @method static array getLastEvents(string $channelId, int $count = 10)
+ * @method static int getLastOffset(string $channelId, array $types = [])
+ * @method static array getLastEvents(string $channelId, int $count = 10, array $types = [])
  * @method static array getUpdates(string $channelId, int $fromOffset, int $limit = 100)
- * @method static int clearByType(string $channelId, string $type, int|null $ttl = null)
- * @method static int clear(string|null $channelId = null, int|null $ttl = null)
+ * @method static int clear(string|null $channelId = null, array $types = [], int|null $ttl = null)
  *
  * @see \Levskiy0\LongPolling\Contracts\LongPollingContract
  */

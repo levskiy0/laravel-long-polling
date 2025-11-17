@@ -22,15 +22,11 @@ interface LongPollingContract
 
     public function getToken(string $channelId): string;
 
-    public function getLastOffset(string $channelId): int;
+    public function getLastOffset(string $channelId, array $types = []): int;
 
-    public function getLastOffsetByType(string $channelId, string $type): int;
-
-    public function getLastEvents(string $channelId, int $count = 10): array;
+    public function getLastEvents(string $channelId, int $count = 10, array $types = []): array;
 
     public function getUpdates(string $channelId, int $fromOffset, int $limit = 100): array;
 
-    public function clearByType(string $channelId, string $type, ?int $ttl = null): int;
-
-    public function clear(?string $channelId = null, ?int $ttl = null): int;
+    public function clear(?string $channelId = null, array $types = [], ?int $ttl = null): int;
 }

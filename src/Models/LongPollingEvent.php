@@ -60,21 +60,39 @@ class LongPollingEvent extends Model
 
     /**
      * Get the last offset (event ID) for a specific channel
+     *
+     * @param string $channelId Channel identifier
+     * @param array $types Event types to filter (empty array = all types)
      */
-    public static function getLastOffset(string $channelId): int
+    public static function getLastOffset(string $channelId, array $types = []): int
     {
-        return static::query()
-            ->where('channel_id', $channelId)
-            ->max('id') ?? 0;
+        $query = static::query()
+            ->where('channel_id', $channelId);
+
+        if (!empty($types)) {
+            $query->whereIn('type', $types);
+        }
+
+        return $query->max('id') ?? 0;
     }
 
     /**
      * Get the last N events from the channel
+     *
+     * @param string $channelId Channel identifier
+     * @param int $count Number of events to retrieve
+     * @param array $types Event types to filter (empty array = all types)
      */
-    public static function getLastEvents(string $channelId, int $count = 10): array
+    public static function getLastEvents(string $channelId, int $count = 10, array $types = []): array
     {
-        return static::query()
-            ->where('channel_id', $channelId)
+        $query = static::query()
+            ->where('channel_id', $channelId);
+
+        if (!empty($types)) {
+            $query->whereIn('type', $types);
+        }
+
+        return $query
             ->orderBy('id', 'desc')
             ->limit($count)
             ->get()
@@ -107,41 +125,22 @@ class LongPollingEvent extends Model
     }
 
     /**
-     * Get the last offset (event ID) for a specific channel and type
+     * Clear events with optional channel, types, and TTL filters
+     *
+     * @param string|null $channelId Channel identifier (null = all channels)
+     * @param array $types Event types to filter (empty array = all types)
+     * @param int|null $ttl Time to live in seconds (only delete events older than this)
      */
-    public static function getLastOffsetByType(string $channelId, string $type): int
-    {
-        return static::query()
-            ->where('channel_id', $channelId)
-            ->where('type', $type)
-            ->max('id') ?? 0;
-    }
-
-    /**
-     * Clear events by type with optional TTL filter
-     */
-    public static function clearByType(string $channelId, string $type, ?int $ttl = null): int
-    {
-        $query = static::query()
-            ->where('channel_id', $channelId)
-            ->where('type', $type);
-
-        if ($ttl !== null) {
-            $query->where('created_at', '<', now()->subSeconds($ttl));
-        }
-
-        return $query->delete();
-    }
-
-    /**
-     * Clear events with optional channel and TTL filters
-     */
-    public static function clear(?string $channelId = null, ?int $ttl = null): int
+    public static function clear(?string $channelId = null, array $types = [], ?int $ttl = null): int
     {
         $query = static::query();
 
         if ($channelId !== null) {
             $query->where('channel_id', $channelId);
+        }
+
+        if (!empty($types)) {
+            $query->whereIn('type', $types);
         }
 
         if ($ttl !== null) {

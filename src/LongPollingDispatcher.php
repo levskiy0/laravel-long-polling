@@ -37,19 +37,14 @@ class LongPollingDispatcher implements LongPollingContract
         return $this->driver->getToken($channelId);
     }
 
-    public function getLastOffset(string $channelId): int
+    public function getLastOffset(string $channelId, array $types = []): int
     {
-        return $this->driver->getLastOffset($channelId);
+        return $this->driver->getLastOffset($channelId, $types);
     }
 
-    public function getLastOffsetByType(string $channelId, string $type): int
+    public function getLastEvents(string $channelId, int $count = 10, array $types = []): array
     {
-        return $this->driver->getLastOffsetByType($channelId, $type);
-    }
-
-    public function getLastEvents(string $channelId, int $count = 10): array
-    {
-        return $this->driver->getLastEvents($channelId, $count);
+        return $this->driver->getLastEvents($channelId, $count, $types);
     }
 
     public function getUpdates(string $channelId, int $fromOffset, int $limit = 100): array
@@ -57,13 +52,8 @@ class LongPollingDispatcher implements LongPollingContract
         return $this->driver->getUpdates($channelId, $fromOffset, $limit);
     }
 
-    public function clearByType(string $channelId, string $type, ?int $ttl = null): int
+    public function clear(?string $channelId = null, array $types = [], ?int $ttl = null): int
     {
-        return $this->driver->clearByType($channelId, $type, $ttl);
-    }
-
-    public function clear(?string $channelId = null, ?int $ttl = null): int
-    {
-        return $this->driver->clear($channelId, $ttl);
+        return $this->driver->clear($channelId, $types, $ttl);
     }
 }

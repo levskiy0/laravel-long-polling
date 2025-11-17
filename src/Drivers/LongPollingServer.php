@@ -94,19 +94,14 @@ class LongPollingServer implements LongPollingContract
             ->publish($this->channel, $message);
     }
 
-    public function getLastOffset(string $channelId): int
+    public function getLastOffset(string $channelId, array $types = []): int
     {
-        return LongPollingEvent::getLastOffset($channelId);
+        return LongPollingEvent::getLastOffset($channelId, $types);
     }
 
-    public function getLastOffsetByType(string $channelId, string $type): int
+    public function getLastEvents(string $channelId, int $count = 10, array $types = []): array
     {
-        return LongPollingEvent::getLastOffsetByType($channelId, $type);
-    }
-
-    public function getLastEvents(string $channelId, int $count = 10): array
-    {
-        return LongPollingEvent::getLastEvents($channelId, $count);
+        return LongPollingEvent::getLastEvents($channelId, $count, $types);
     }
 
     public function getUpdates(string $channelId, int $fromOffset, int $limit = 100): array
@@ -114,13 +109,8 @@ class LongPollingServer implements LongPollingContract
         return LongPollingEvent::getUpdates($channelId, $fromOffset, $limit);
     }
 
-    public function clearByType(string $channelId, string $type, ?int $ttl = null): int
+    public function clear(?string $channelId = null, array $types = [], ?int $ttl = null): int
     {
-        return LongPollingEvent::clearByType($channelId, $type, $ttl);
-    }
-
-    public function clear(?string $channelId = null, ?int $ttl = null): int
-    {
-        return LongPollingEvent::clear($channelId, $ttl);
+        return LongPollingEvent::clear($channelId, $types, $ttl);
     }
 }
