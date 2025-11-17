@@ -34,13 +34,17 @@ class LongPollingServer implements LongPollingContract
      * Broadcast an event to a specific channel
      *
      * This method:
-     * 1. Stores the event in the database
+     * 1. Optionally stores the event in the database (if $saveEvent is true)
      * 2. Publishes a notification to Redis for real-time delivery
      */
-    public function broadcast(string $channelId, array $payload): void
+    public function broadcast(string $channelId, array $payload, bool $saveEvent = true): void
     {
-        $event = LongPollingEvent::storeEvent($channelId, $payload);
-        $this->publishToRedis($channelId, $event->id);
+        if ($saveEvent) {
+            $event = LongPollingEvent::storeEvent($channelId, $payload);
+            $this->publishToRedis($channelId, $event->id);
+        } else {
+            $this->publishToRedis($channelId, null);
+        }
     }
 
     /**
@@ -49,10 +53,14 @@ class LongPollingServer implements LongPollingContract
      * This method does the same as broadcast() but is called directly,
      * bypassing the queue system for immediate delivery.
      */
-    public function broadcastNow(string $channelId, array $payload): void
+    public function broadcastNow(string $channelId, array $payload, bool $saveEvent = true): void
     {
-        $event = LongPollingEvent::storeEvent($channelId, $payload);
-        $this->publishToRedis($channelId, $event->id);
+        if ($saveEvent) {
+            $event = LongPollingEvent::storeEvent($channelId, $payload);
+            $this->publishToRedis($channelId, $event->id);
+        } else {
+            $this->publishToRedis($channelId, null);
+        }
     }
 
     /**
@@ -82,7 +90,7 @@ class LongPollingServer implements LongPollingContract
     /**
      * Publish a notification to Redis
      */
-    private function publishToRedis(string $channelId, int $eventId): void
+    private function publishToRedis(string $channelId, ?int $eventId): void
     {
         $message = json_encode([
             'channel_id' => $channelId,

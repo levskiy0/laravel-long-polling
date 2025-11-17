@@ -23,12 +23,13 @@ class BroadcastEventJob implements ShouldQueue
     public function __construct(
         private readonly string $channelId,
         private readonly array $payload,
+        private readonly bool $saveEvent = true,
     ) {}
 
     public function handle(): void
     {
         // Get the underlying driver directly, not the dispatcher
         $driver = app('long-polling.driver');
-        $driver->broadcast($this->channelId, $this->payload);
+        $driver->broadcast($this->channelId, $this->payload, $this->saveEvent);
     }
 }

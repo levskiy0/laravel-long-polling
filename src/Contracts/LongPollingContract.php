@@ -12,13 +12,21 @@ interface LongPollingContract
 {
     /**
      * Broadcast an event to a channel (queued)
+     *
+     * @param string $channelId Channel identifier
+     * @param array $payload Event data
+     * @param bool $saveEvent Whether to save event to database (default: true)
      */
-    public function broadcast(string $channelId, array $payload): void;
+    public function broadcast(string $channelId, array $payload, bool $saveEvent = true): void;
 
     /**
      * Broadcast an event to a channel immediately (synchronous, bypassing queue)
+     *
+     * @param string $channelId Channel identifier
+     * @param array $payload Event data
+     * @param bool $saveEvent Whether to save event to database (default: true)
      */
-    public function broadcastNow(string $channelId, array $payload): void;
+    public function broadcastNow(string $channelId, array $payload, bool $saveEvent = true): void;
 
     public function getToken(string $channelId): string;
 

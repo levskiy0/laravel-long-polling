@@ -11,8 +11,8 @@ namespace Levskiy0\LongPolling\Facades;
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @method static void broadcast(string $channelId, array $payload)
- * @method static void broadcastNow(string $channelId, array $payload)
+ * @method static void broadcast(string $channelId, array $payload, bool $saveEvent = true)
+ * @method static void broadcastNow(string $channelId, array $payload, bool $saveEvent = true)
  * @method static string getToken(string $channelId)
  * @method static int getLastOffset(string $channelId)
  * @method static array getLastEvents(string $channelId, int $count = 10)
