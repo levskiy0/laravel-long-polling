@@ -20,16 +20,16 @@ class LongPollingDispatcher implements LongPollingContract
         private readonly string $queue,
     ) {}
 
-    public function broadcast(string $channelId, array $payload, bool $saveEvent = true): void
+    public function broadcast(string $channelId, array $payload): void
     {
-        BroadcastEventJob::dispatch($channelId, $payload, $saveEvent)
+        BroadcastEventJob::dispatch($channelId, $payload)
             ->onQueue($this->queue);
     }
 
-    public function broadcastNow(string $channelId, array $payload, bool $saveEvent = true): void
+    public function broadcastNow(string $channelId, array $payload): void
     {
         // Bypass queue and call driver directly
-        $this->driver->broadcastNow($channelId, $payload, $saveEvent);
+        $this->driver->broadcastNow($channelId, $payload);
     }
 
     public function getToken(string $channelId): string
