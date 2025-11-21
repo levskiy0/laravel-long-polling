@@ -9,10 +9,11 @@
 namespace Levskiy0\LongPolling\Facades;
 
 use Illuminate\Support\Facades\Facade;
+use Levskiy0\LongPolling\Models\LongPollingEvent;
 
 /**
  * @method static void broadcast(string $channelId, array $payload, string $type = 'event')
- * @method static void broadcastNow(string $channelId, array $payload, string $type = 'event')
+ * @method static LongPollingEvent broadcastNow(string $channelId, array $payload, string $type = 'event')
  * @method static string getToken(string $channelId)
  * @method static int getLastOffset(string $channelId, array $types = [])
  * @method static array getLastEvents(string $channelId, int $count = 10, array $types = [])

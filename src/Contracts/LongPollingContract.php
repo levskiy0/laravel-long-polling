@@ -8,6 +8,8 @@
 
 namespace Levskiy0\LongPolling\Contracts;
 
+use Levskiy0\LongPolling\Models\LongPollingEvent;
+
 interface LongPollingContract
 {
     /**
@@ -18,7 +20,7 @@ interface LongPollingContract
     /**
      * Broadcast an event to a channel immediately (synchronous, bypassing queue)
      */
-    public function broadcastNow(string $channelId, array $payload, string $type = 'event'): void;
+    public function broadcastNow(string $channelId, array $payload, string $type = 'event'): LongPollingEvent;
 
     public function getToken(string $channelId): string;
 

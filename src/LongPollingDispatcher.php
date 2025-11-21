@@ -11,12 +11,14 @@
 namespace Levskiy0\LongPolling;
 
 use Levskiy0\LongPolling\Contracts\LongPollingContract;
+use Levskiy0\LongPolling\Drivers\LongPollingServer;
 use Levskiy0\LongPolling\Jobs\BroadcastEventJob;
+use Levskiy0\LongPolling\Models\LongPollingEvent;
 
 class LongPollingDispatcher implements LongPollingContract
 {
     public function __construct(
-        private readonly LongPollingContract $driver,
+        private readonly LongPollingServer $driver,
         private readonly string $queue,
     ) {}
 
@@ -26,10 +28,9 @@ class LongPollingDispatcher implements LongPollingContract
             ->onQueue($this->queue);
     }
 
-    public function broadcastNow(string $channelId, array $payload, string $type = 'event'): void
+    public function broadcastNow(string $channelId, array $payload, string $type = 'event'): LongPollingEvent
     {
-        // Bypass queue and call driver directly
-        $this->driver->broadcastNow($channelId, $payload, $type);
+        return $this->driver->broadcast($channelId, $payload, $type);
     }
 
     public function getToken(string $channelId): string

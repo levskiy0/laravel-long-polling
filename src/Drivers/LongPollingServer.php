@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Redis;
 use Levskiy0\LongPolling\Contracts\LongPollingContract;
 use Levskiy0\LongPolling\Models\LongPollingEvent;
 
-class LongPollingServer implements LongPollingContract
+class LongPollingServer
 {
     private Client $httpClient;
 
@@ -37,22 +37,11 @@ class LongPollingServer implements LongPollingContract
      * 1. Stores the event in the database
      * 2. Publishes a notification to Redis for real-time delivery
      */
-    public function broadcast(string $channelId, array $payload, string $type = 'event'): void
+    public function broadcast(string $channelId, array $payload, string $type = 'event'): LongPollingEvent
     {
         $event = LongPollingEvent::storeEvent($channelId, $payload, $type);
         $this->publishToRedis($channelId, $event->id);
-    }
-
-    /**
-     * Broadcast an event immediately (synchronous)
-     *
-     * This method does the same as broadcast() but is called directly,
-     * bypassing the queue system for immediate delivery.
-     */
-    public function broadcastNow(string $channelId, array $payload, string $type = 'event'): void
-    {
-        $event = LongPollingEvent::storeEvent($channelId, $payload, $type);
-        $this->publishToRedis($channelId, $event->id);
+        return $event;
     }
 
     /**
